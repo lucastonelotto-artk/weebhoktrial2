@@ -1,17 +1,18 @@
 // Import Express.js
 const express = require('express');
+const axios = require('axios');
 
-// Create an Express app
 const app = express();
-
-// Middleware to parse JSON bodies
 app.use(express.json());
 
-// Set port and verify_token
+// Configs
 const port = process.env.PORT || 3000;
 const verifyToken = process.env.VERIFY_TOKEN;
+const rasaURL = process.env.RASA_URL || 'http://localhost:5005/webhooks/rest/webhook';
+const whatsappToken = process.env.WHATSAPP_TOKEN;
+const phoneNumberId = process.env.PHONE_NUMBER_ID;
 
-// Route for GET requests
+// GET: Verificación de Webhook
 app.get('/', (req, res) => {
   const { 'hub.mode': mode, 'hub.challenge': challenge, 'hub.verify_token': token } = req.query;
 
@@ -23,15 +24,57 @@ app.get('/', (req, res) => {
   }
 });
 
-// Route for POST requests
-app.post('/', (req, res) => {
-  const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 19);
-  console.log(`\n\nWebhook received ${timestamp}\n`);
-  console.log(JSON.stringify(req.body, null, 2));
-  res.status(200).end();
+// POST: Mensajes entrantes de WhatsApp
+app.post('/', async (req, res) => {
+  const body = req.body;
+
+  console.log("📩 Webhook recibido:");
+  console.log(JSON.stringify(body, null, 2));
+
+  if (body.object) {
+    try {
+      const message = body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
+      const sender = message?.from;
+      const text = message?.text?.body;
+
+      if (sender && text) {
+        console.log(`👉 Mensaje de ${sender}: ${text}`);
+
+        // 1. Enviar mensaje a Rasa
+        const rasaResponse = await axios.post(rasaURL, {
+          sender: sender,
+          message: text
+        });
+
+        // 2. Procesar respuesta de Rasa
+        for (const msg of rasaResponse.data) {
+          if (msg.text) {
+            await axios.post(
+              `https://graph.facebook.com/v18.0/${phoneNumberId}/messages`,
+              {
+                messaging_product: "whatsapp",
+                to: sender,
+                text: { body: msg.text }
+              },
+              {
+                headers: {
+                  "Authorization": `Bearer ${whatsappToken}`,
+                  "Content-Type": "application/json"
+                }
+              }
+            );
+          }
+        }
+      }
+    } catch (err) {
+      console.error("❌ Error procesando mensaje:", err.response?.data || err.message);
+    }
+  }
+
+  res.sendStatus(200);
 });
 
-// Start the server
+// Start server
 app.listen(port, () => {
-  console.log(`\nListening on port ${port}\n`);
+  console.log(`🚀 Listening on port ${port}`);
 });
