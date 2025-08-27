@@ -7,10 +7,10 @@ app.use(express.json());
 
 // Configs
 const port = process.env.PORT || 3000;
-const verifyToken = process.env.VERIFY_TOKEN;
-const rasaURL = process.env.RASA_URL || 'http://localhost:5005/webhooks/rest/webhook';
-const whatsappToken = process.env.WHATSAPP_TOKEN;
-const phoneNumberId = process.env.PHONE_NUMBER_ID;
+const verifyToken = "787052530498023";
+const rasaURL = https://b24fa66d40b5.ngrok-fr/weebhooks/rest/webhook;
+const whatsappToken = "EAASx3p5EdCMBPXpEAFBVFKKhthJFJ0qIUmY0EPx3vwJN2vi0NeZAvjadVwMdZAyfL0qNFIbV8ZCgYOapHxYZAmiB4dQAiaJ5CBTAQKoMAhN60Rv0G9i0mMpsjlEy7b1Ki45gqAGFnBrJDAbvO9SuF2LB8yjqTG7RW6HZAmHQiyQtF1nTcUhIZBZAeSObH4hMnCb9w5hQiXc82ZCCD074DVoFIFLRYylZBILU5d1TKmyghzKd0vDiawTA0P831bwZDZD";
+const phoneNumberId = "819298601257509";
 
 // GET: Verificación de Webhook
 app.get('/', (req, res) => {
