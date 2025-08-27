@@ -1,0 +1,24 @@
+{
+  "name": "reciklo-bot",
+  "version": "1.0.0",
+  "description": "Servidor de webhook para WhatsApp y Rasa Bot",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "axios": "^1.6.0",
+    "body-parser": "^1.20.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "keywords": ["rasa", "whatsapp", "webhook", "bot"],
+  "author": "Tu Nombre",
+  "license": "MIT"
+}
