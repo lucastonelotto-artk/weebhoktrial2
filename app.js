@@ -1,23 +1,23 @@
-// Import Express.js
+// Import Express.js y Axios
 const express = require('express');
 const axios = require('axios');
 
 const app = express();
 app.use(express.json());
 
-// Configs
+// Configuraciones
 const port = process.env.PORT || 3000;
-const verifyToken = "787052530498023";
-const rasaURL = "http://localhost:5005/webhooks/rest/webhook"; // URL correcta de Rasa
+const verifyToken = "787052530498023"; // tu verify_token de WhatsApp
+const rasaURL = "http://localhost:5005/webhooks/rest/webhook"; // URL de Rasa
 const whatsappToken = "EAASx3p5EdCMBPXpEAFBVFKKhthJFJ0qIUmY0EPx3vwJN2vi0NeZAvjadVwMdZAyfL0qNFIbV8ZCgYOapHxYZAmiB4dQAiaJ5CBTAQKoMAhN60Rv0G9i0mMpsjlEy7b1Ki45gqAGFnBrJDAbvO9SuF2LB8yjqTG7RW6HZAmHQiyQtF1nTcUhIZBZAeSObH4hMnCb9w5hQiXc82ZCCD074DVoFIFLRYylZBILU5d1TKmyghzKd0vDiawTA0P831bwZDZD";
 const phoneNumberId = "819298601257509";
 
-// GET: Verificación de Webhook
+// GET: Verificación del Webhook
 app.get('/', (req, res) => {
   const { 'hub.mode': mode, 'hub.challenge': challenge, 'hub.verify_token': token } = req.query;
 
   if (mode === 'subscribe' && token === verifyToken) {
-    console.log('WEBHOOK VERIFIED');
+    console.log('WEBHOOK VERIFICADO');
     res.status(200).send(challenge);
   } else {
     res.status(403).end();
@@ -40,13 +40,13 @@ app.post('/', async (req, res) => {
       if (sender && text) {
         console.log(`👉 Mensaje de ${sender}: ${text}`);
 
-        // 1. Enviar mensaje a Rasa
+        // 1️⃣ Enviar mensaje a Rasa
         const rasaResponse = await axios.post(rasaURL, {
-          sender,
+          sender: sender,
           message: text
         });
 
-        // 2. Procesar respuesta de Rasa
+        // 2️⃣ Procesar respuesta de Rasa
         const messages = Array.isArray(rasaResponse.data) ? rasaResponse.data : [];
         for (const msg of messages) {
           if (msg.text) {
@@ -69,17 +69,19 @@ app.post('/', async (req, res) => {
         }
       }
     } catch (err) {
-  console.error("❌ Error procesando mensaje:");
-  console.error(err);            // imprime el error completo
-  if (err.response) {
-    console.error("Detalles de la respuesta de Axios:", err.response.data);
+      console.error("❌ Error procesando mensaje:");
+      console.error(err);
+      if (err.response) {
+        console.error("Detalles de la respuesta de Axios:", err.response.data);
+      }
+    }
   }
 
-
+  // Siempre respondemos 200 a WhatsApp
   res.sendStatus(200);
 });
 
-// Start server
+// Iniciar servidor
 app.listen(port, () => {
   console.log(`🚀 Listening on port ${port}`);
 });
