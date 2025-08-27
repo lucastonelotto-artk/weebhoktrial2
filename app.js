@@ -8,7 +8,7 @@ app.use(express.json());
 // Configs
 const port = process.env.PORT || 3000;
 const verifyToken = "787052530498023";
-const rasaURL = "https://7138486d345d.ngrok-free.app//webhooks/rest/webhook`";
+const rasaURL = "http://localhost:5005/webhooks/rest/webhook"; // URL correcta de Rasa
 const whatsappToken = "EAASx3p5EdCMBPXpEAFBVFKKhthJFJ0qIUmY0EPx3vwJN2vi0NeZAvjadVwMdZAyfL0qNFIbV8ZCgYOapHxYZAmiB4dQAiaJ5CBTAQKoMAhN60Rv0G9i0mMpsjlEy7b1Ki45gqAGFnBrJDAbvO9SuF2LB8yjqTG7RW6HZAmHQiyQtF1nTcUhIZBZAeSObH4hMnCb9w5hQiXc82ZCCD074DVoFIFLRYylZBILU5d1TKmyghzKd0vDiawTA0P831bwZDZD";
 const phoneNumberId = "819298601257509";
 
@@ -42,13 +42,15 @@ app.post('/', async (req, res) => {
 
         // 1. Enviar mensaje a Rasa
         const rasaResponse = await axios.post(rasaURL, {
-          sender: sender,
+          sender,
           message: text
         });
 
         // 2. Procesar respuesta de Rasa
-        for (const msg of rasaResponse.data) {
+        const messages = Array.isArray(rasaResponse.data) ? rasaResponse.data : [];
+        for (const msg of messages) {
           if (msg.text) {
+            console.log(`💬 Respondiendo a ${sender}: ${msg.text}`);
             await axios.post(
               `https://graph.facebook.com/v18.0/${phoneNumberId}/messages`,
               {
