@@ -74,7 +74,6 @@ app.post('/', async (req, res) => {
   if (err.response) {
     console.error("Detalles de la respuesta de Axios:", err.response.data);
   }
-}
 
 
   res.sendStatus(200);
