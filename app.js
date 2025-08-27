@@ -69,9 +69,13 @@ app.post('/', async (req, res) => {
         }
       }
     } catch (err) {
-      console.error("❌ Error procesando mensaje:", err.response?.data || err.message);
-    }
+  console.error("❌ Error procesando mensaje:");
+  console.error(err);            // imprime el error completo
+  if (err.response) {
+    console.error("Detalles de la respuesta de Axios:", err.response.data);
   }
+}
+
 
   res.sendStatus(200);
 });
