@@ -32,24 +32,28 @@ app.post('/', async (req, res) => {
   console.log(JSON.stringify(body, null, 2));
 
   if (body.object) {
-    try {
+try {
   const message = body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
   const sender = message?.from;
   const text = message?.text?.body;
 
   if (sender && text) {
     console.log(`👉 Mensaje de ${sender}: ${text}`);
-
     console.log("💡 Enviando a Rasa:", JSON.stringify({ sender, message: text }, null, 2));
 
     const rasaResponse = await axios.post(rasaURL, { sender, message: text });
-
     console.log("💡 Respuesta de Rasa:", JSON.stringify(rasaResponse.data, null, 2));
 
     const messages = Array.isArray(rasaResponse.data) ? rasaResponse.data : [];
     for (const msg of messages) {
       if (msg.text) {
         console.log(`💬 Respondiendo a ${sender}: ${msg.text}`);
+        console.log("💬 Payload a WhatsApp:", {
+          messaging_product: "whatsapp",
+          to: sender,
+          text: { body: msg.text }
+        });
+
         await axios.post(
           `https://graph.facebook.com/v18.0/${phoneNumberId}/messages`,
           {
@@ -73,6 +77,7 @@ app.post('/', async (req, res) => {
     console.error("Detalles de la respuesta de Axios:", err.response.data);
   }
 }
+
 
   // Siempre respondemos 200 a WhatsApp
   res.sendStatus(200);
