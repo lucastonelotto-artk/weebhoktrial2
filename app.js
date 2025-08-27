@@ -15,7 +15,6 @@ const phoneNumberId = "819298601257509";
 // GET: Verificación del Webhook
 app.get('/', (req, res) => {
   const { 'hub.mode': mode, 'hub.challenge': challenge, 'hub.verify_token': token } = req.query;
-
   if (mode === 'subscribe' && token === verifyToken) {
     console.log('WEBHOOK VERIFICADO');
     res.status(200).send(challenge);
@@ -44,10 +43,9 @@ app.post('/', async (req, res) => {
         const rasaResponse = await axios.post(rasaURL, { sender, message: text });
         console.log("💡 Respuesta de Rasa:", JSON.stringify(rasaResponse.data, null, 2));
 
-        // Enviar siempre algo a WhatsApp
         const messages = Array.isArray(rasaResponse.data) ? rasaResponse.data : [];
 
-        // Si Rasa no devolvió 'text', generamos fallback
+        // Fallback si Rasa no devuelve text
         if (messages.length === 0 || !messages.some(m => m.text)) {
           console.log("⚠️ Rasa no devolvió texto, enviando fallback...");
           await axios.post(
@@ -95,9 +93,11 @@ app.post('/', async (req, res) => {
     }
   }
 
+  // Siempre respondemos 200 a WhatsApp
   res.sendStatus(200);
 });
 
+// Iniciar servidor
 app.listen(port, () => {
   console.log(`🚀 Listening on port ${port}`);
 });
