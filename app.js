@@ -8,7 +8,7 @@ app.use(express.json());
 // Configuraciones
 const port = process.env.PORT || 3000;
 const verifyToken = "787052530498023";
-const rasaURL = "https://c38e2da57b77.ngrok-free.app/webhooks/rest/webhook";
+const rasaURL = "https://c4a520139496.ngrok-fr/webhooks/rest/webhook";
 const whatsappToken = "EAASx3p5EdCMBPfrlynILFi5tjVM9PymxKr7IfWuG6T6ZB9sYuQZCTOVEnGMZBZBAzE5pVra2qQjvZCIQdg1wA2oyzIc3lvA2ZA9XIXpeuTl8QKZA3HDEhFxICiFLyrKVEmSkNbPnJyaVLTE5ZBVMSI6I4AMRzwh2BpKQ7Mid69ZBNfab6AxsqFstTVGMfvpYmpsQBV9IEvwyjRnZBXxfGbYxRy2M4u5ndIXPZCDoQk4Q6oVLq9FeyTJ8qKAfctbkWoZD";
 const phoneNumberId = "819298601257509";
 
